@@ -20,7 +20,10 @@ loss_more = 10
 loss_less = 1
 # 损失函数
 loss = tf.reduce_sum(tf.where(tf.greater(y, y_), (y-y_)*loss_more, (y_-y)*loss_less))
-
+'''
+    tf.greater的输入为两个变量，比较变量的每个元素的大小，返回大True，小False
+    tf.where输入三个变量，第一个为选择条件，True时选择第二个参数，False时选第三个参数
+'''
 # 优化器
 optimiter = tf.train.AdamOptimizer(0.001).minimize(loss)
 
