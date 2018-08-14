@@ -20,6 +20,42 @@ REGULARIZATION_RATE = 0.0001    # 描述模型复杂度的正则化项在损失�
 TRAINING_STEPS = 10000           # 训练轮数
 MOVING_AVERAGE_DECAY = 0.99     # 移动平均指数
 
+
+'''
+def inference(input_tensor, average_class, reuse=False):
+    # 定义第一层的神经网络的变量和向前传播过程
+    with tf.Variable_scope('layer1', reuse=reuse):
+        # 根据传进来的reuse来判断创建新变量还是使用已经创建好的。在第一构造网络时需要创建新的变量
+        # 以后每次调用这个函数都直接使用reuse=True就不需要每次将变量传进来了,即inference(reuse=True)
+        weights = tf.get_variable('weights', [INPUT_NODE, LAYER1_NODE], 
+                                initializer=tf.truncated_normal_initializer(stddev=0.1))
+        
+        biases = tf.get_variable('biases', [LAYER1_NODE],
+                                initializer=tf.constant_initializer(0.0))
+
+        if average_class:
+            layer1 = tf.nn.relu(tf.matmul(input_tensor, average_class.average(weights) + biases))
+        else:
+            layer1 = tf.nn.relu(tf.matmul(input_tensor, weights) + biases)
+            
+        
+    # 定义第二层的神经网络的变量和向前传播过程
+    with tf.Variable_scope('layer2', reuse=reuse):
+        # 根据传进来的reuse来判断创建新变量还是使用已经创建好的。在第一构造网络时需要创建新的变量
+        # 以后每次调用这个函数都直接使用reuse=True就不需要每次将变量传进来了,即inference(reuse=True)
+        weights = tf.get_variable('weights', [LAYER1_NODE, OUTPUT_NODE], 
+                                initializer=tf.truncated_normal_initializer(stddev=0.1))
+        
+        biases = tf.get_variable('biases', [LAYER1_NODE],
+                                initializer=tf.constant_initializer(0.0))
+
+        if average_class:
+            layer2 = tf.nn.relu(tf.matmul(layer1, average_class.average(weights) + biases))
+        else:
+            layer2 = tf.nn.relu(tf.matmul(layer1, weights) + biases)
+                
+'''
+
 # 计算神经网络的前向传播
 def forward_prop(input_tensor, average_class, weights1, biases1, weights2, biases2):
     if average_class:
@@ -42,6 +78,8 @@ def train(mnist):
     # 生成隐藏层的参数
     weights1 = tf.Variable(tf.truncated_normal([INPUT_NODE, LAYER1_NODE], stddev=0.1))
     biases1 = tf.Variable(tf.constant(0.1, shape=[LAYER1_NODE]))
+    # weights1 = tf.get_variable('weighrs', [INPUT_NODE, LAYER1_NODE], initializer=
+    #                           tf.truncated_normal_initializer([INPUT_NODE, LAYER1_NODE]))
 
     # 生成输出层参数
     weights2 = tf.Variable(tf.truncated_normal([LAYER1_NODE, OUTPUT_NODE], stddev=0.1))
@@ -50,6 +88,9 @@ def train(mnist):
     # 计算向前传播结果，无移动平均指数
     y = forward_prop(x, None, weights1, biases1, weights2, biases2)
     
+    '''
+    y = inference(x)  # 不需要将所有的变量传入函数中
+    '''
     # 定义存储训练的变量，将训练轮数的变量指定为不可训练的参数
     global_step = tf.Variable(0, trainable=False)
 
